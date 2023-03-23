@@ -1,0 +1,106 @@
+<mujoco model="alice_laber">
+    <option timestep="0.002" />
+
+    <size memory="100M"/>
+
+    <asset>
+        <texture type="skybox" builtin="gradient" rgb1=".3 .5 .7" rgb2="0 0 0" width="512" height="512"/>
+        <texture name="body" type="cube" builtin="flat" mark="cross" width="127" height="1278"
+                rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" markrgb="1 1 1" random="0.01"/>
+        <material name="body" texture="body" texuniform="true" rgba="0.8 0.6 .4 1"/>
+        <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+        <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance=".2"/>
+    </asset>
+
+    <default>
+        <motor ctrlrange="-1 1" ctrllimited="true"/>
+        <default class="body">
+        <geom type="capsule" condim="1" friction=".7" solimp=".9 .99 .003" solref=".015 1" material="body"/>
+        <joint type="hinge" damping=".2" stiffness="1" armature=".01" limited="true" solimplimit="0 .99 .01"/>
+        <default class="big_joint">
+            <joint damping="5" stiffness="10"/>
+            <default class="big_stiff_joint">
+            <joint stiffness="20"/>
+            </default>
+        </default>
+        </default>
+    </default>
+
+    <visual>
+        <map force="0.1" zfar="30"/>
+        <rgba haze="0.15 0.25 0.35 1"/>
+        <quality shadowsize="4096"/>
+        <global offwidth="800" offheight="800"/>
+    </visual>
+
+    <worldbody>
+        <body name="torso" pos="0 0.2 0">
+            <joint name="root_x" type="slide" axis="1 0 0" pos="0 0 0" />
+            <joint name="root_y" type="slide" axis="0 1 0" pos="0 0 0" />
+            <joint name="root_z" type="slide" axis="0 0 1" pos="0 0 0" />
+            <joint name="root_pitch" type="hinge" axis="0 1 0" pos="0 0 0" />
+            <joint name="root_roll" type="hinge" axis="1 0 0" pos="0 0 0" />
+            <joint name="root_yaw" type="hinge" axis="0 0 1" pos="0 0 0" />
+
+            <geom type="box" size="0.15 0.1 0.05" />
+
+            <!-- Front right leg -->
+            <body name="fr_leg1" pos="0.15 0.1 0">
+                <geom type="capsule" fromto="0 0 0 0.1 0 -0.25" size="0.025" />
+                <joint name="fr_leg1_pitch1" type="hinge" axis="0 1 0" pos="0 0 0" limited="true" range="-0.1 1.2" />
+                <body name="fr_leg1_2" pos="0.1 0 -0.25">
+                    <geom type="capsule" fromto="0 0 0 0 0 -0.25" size="0.025" />
+                    <joint name="fr_leg1_pitch2" type="hinge" axis="0 1 0" pos="0 0 0" limited="true" range="-0.1 1.2"/>
+                </body>
+            </body>
+
+            <!-- Front left leg -->
+            <body name="fl_leg2" pos="-0.15 0.1 0">
+                <geom type="capsule" fromto="0 0 0 -0.1 0 -0.25" size="0.025" />
+                <joint name="fl_leg2_pitch1" type="hinge" axis="0 1 0" pos="0 0 0" limited="true" range="-0.1 1.2" />
+                <body name="fl_leg2_2" pos="-0.1 0 -0.25">
+                    <geom type="capsule" fromto="0 0 0 0 0 -0.25" size="0.025" />
+                    <joint name="fl_leg2_pitch2" type="hinge" axis="0 1 0" pos="0 0 0" limited="true" range="-0.1 1.2"/>
+                </body>
+            </body>
+
+            <!-- Back right leg -->
+            <body name="br_leg3" pos="0.15 -0.1 0">
+                <geom type="capsule" fromto="0 0 0 0.1 0 -0.25" size="0.025" />
+                <joint name="br_leg3_pitch1" type="hinge" axis="0 1 0" pos="0 0 0" limited="true" range="-1.2 0.1" />
+                <body name="br_leg3_2" pos="0.1 0 -0.25">
+                    <geom type="capsule" fromto="0 0 0 0 0 -0.25" size="0.025" />
+                    <joint name="br_leg3_pitch2" type="hinge" axis="0 1 0" pos="0 0 0" limited="true" range="-0.1 1.2"/>
+                </body>
+            </body>
+
+            <!-- Back left leg -->
+            <body name="bl_leg4" pos="-0.15 -0.1 0">
+                <geom type="capsule" fromto="0 0 0 -0.1 0 -0.25" size="0.025" />
+                <joint name="bl_leg4_pitch1" type="hinge" axis="0 1 0" pos="0 0 0" limited="true" range="-1.2 0.1" />
+                <body name="bl_leg4_2" pos="-0.1 0 -0.25">
+                    <geom type="capsule" fromto="0 0 0 0 0 -0.25" size="0.025" />
+                    <joint name="bl_leg4_pitch2" type="hinge" axis="0 1 0" pos="0 0 0" limited="true" range="-0.1 1.2"/>
+                </body>
+            </body>
+        </body>
+
+        <!-- Ground plane -->
+        <geom type="plane" size="10 10 0.1" rgba="0.8 0.9 0.8 1" />
+
+        <!-- Lighting and camera settings -->
+        <light name="light1" pos="0 0 5" />
+        <camera name="main" pos="2 2 2" xyaxes="-0.707 -0.707 0  0.707 -0.707 0" />
+    </worldbody>
+
+    <actuator>
+        <motor joint="fr_leg1_pitch1" />
+        <motor joint="fr_leg1_pitch2" />
+        <motor joint="fl_leg2_pitch1" />
+        <motor joint="fl_leg2_pitch2" />
+        <motor joint="br_leg3_pitch1" />
+        <motor joint="br_leg3_pitch2" />
+        <motor joint="bl_leg4_pitch1" />
+        <motor joint="bl_leg4_pitch2" />
+    </actuator>
+</mujoco>
